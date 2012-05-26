@@ -89,9 +89,9 @@ class WeatherParser:
 if __name__ == '__main__':
     import sys
     if len(sys.argv) != 2:
-        print("Usage: {0} <city>")
+        print('Usage: {0} <city>')
         sys.exit(1)
     we = WeatherParser(sys.argv[1])
-    temp = we.parse_temp().encode("UTF-8")
-    cond = we.parse_conditions().encode("UTF-8")
-    print("{0}°C, {1}".format(temp, cond))
+    temp = we.parse_temp().encode('UTF-8')
+    cond = we.parse_conditions().encode('UTF-8')
+    print('{0}°C, {1}'.format(temp, cond))
