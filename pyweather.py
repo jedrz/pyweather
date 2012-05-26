@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import urllib2
-from xml.dom import minidom
+import xml.etree.ElementTree
+import urllib.request
 
 
 """Simple weather (from Google) parser."""
@@ -20,29 +20,37 @@ class UnitsError(BaseError):
 
 class WeatherParser:
 
-    WEATHER_URL = "http://www.google.com/ig/api?weather={city}&hl=" + \
-            "{lang}&oe=UTF-8"
+    WEATHER_URL = 'http://www.google.com/ig/api?weather={city}&hl='
+    '{lang}&oe=UTF-8'
 
-    def __init__(self, city, lang="en", units="c"):
-        if units not in ("c", "f"):
-            raise UnitsError("Units must be c or f, not {0}".format(units))
+    def __init__(self, city, lang='en', units='c'):
+        if units not in ('c', 'f'):
+            raise UnitsError('UnitsError: {} units are invalid'.format(units))
         self.units = units
-        xml = urllib2.urlopen(self.WEATHER_URL.format(city=city,
-            lang=lang))
-        self.xmldoc = minidom.parse(xml)
+        with urllib.request.urlopen(
+                self.WEATHER_URL.format(city=city, lang=lang)) as xmlsock:
+            self.tree = xml.etree.ElementTree.parse(xmlsock)
+
+    def _find(self, it, tag):
+        for i in it:
+            res = i.find(tag)
+            if res:
+                return res
+            else:
+                return self._find(i, tag)
 
     def parse_temp(self):
-        """Parses temperature in proper units and returns string with
-        temperature.
+        """Parse temperature in proper units and return a string with
+        the temperature.
         """
-        temp = self.xmldoc.getElementsByTagName("temp_" + self.units)
-        temp = temp[0].attributes["data"].value
+        temp_elem = self.tree.find('.//temp_{}'.format(self.units))
+        temp = temp_elem.attrib['data']
         return temp
 
     def parse_conditions(self):
         """Parses current conditions and returns string"""
-        cond = self.xmldoc.getElementsByTagName("condition")
-        cond = cond[0].attributes["data"].value
+        cond_elem = self.tree.find('.//condition')
+        cond = cond_elem.attrib['data']
         return cond
 
     def parse_current_conditions(self, ignore=["icon"]):
