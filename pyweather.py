@@ -3,6 +3,7 @@
 
 import xml.etree.ElementTree
 import urllib.request
+import collections
 
 
 """Simple weather (from Google) parser."""
@@ -67,23 +68,18 @@ class WeatherParser:
     def _parse_forecast_conditions(self, today=False, ignore=[]):
         """Protected method.
 
-        Return dictionary with conditions on next days, when optional
+        Return ordered dictionary with conditions on next days, when optional
         argument is False or also with current day, when Today is True.
-        Argument ignore is a list, which has ignored tags.
+        Argument ignore says which tags should be removed.
         """
-        forecast = {}
+        forecast = collections.OrderedDict()
         begin = 0 if today else 1
-        for day in self.xmldoc.getElementsByTagName(
-                "forecast_conditions")[begin:]:
-            day_name = day.firstChild.attributes["data"].value
-            forecast[day_name] = {}
-            for node in day.childNodes[1:]:
-                if node.nodeName not in ignore:
-                    forecast[day_name][node.nodeName] = \
-                            node.attributes["data"].value
+        for elem in self.tree.findall('.//forecast_conditions')[begin:]:
+            forecast[elem.find('day_of_week').attrib['data']] = \
+                    {n.tag: n.attrib['data'] for n in elem}
         return forecast
 
-    def parse_weather_on_next_days(self, ignore=["icon"]):
+    def parse_next_days(self, ignore=[]):
         return self._parse_forecast_conditions(ignore=ignore)
 
     def parse_all(self, ignore=["icon"]):
@@ -99,6 +95,3 @@ if __name__ == '__main__':
     temp = we.parse_temp().encode("UTF-8")
     cond = we.parse_conditions().encode("UTF-8")
     print("{0}°C, {1}".format(temp, cond))
-    print(we.parse_current_conditions())
-    print(we.parse_on_next_days())
-    print(we.parse_all())
