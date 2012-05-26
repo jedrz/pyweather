@@ -5,6 +5,9 @@ import urllib2
 from xml.dom import minidom
 
 
+"""Simple weather (from Google) parser."""
+
+
 class BaseError(Exception):
     """Base Error in this module"""
     pass
@@ -15,12 +18,12 @@ class UnitsError(BaseError):
     pass
 
 
-class Weather(object):
+class WeatherParser:
 
     WEATHER_URL = "http://www.google.com/ig/api?weather={city}&hl=" + \
             "{lang}&oe=UTF-8"
 
-    def __init__(self, city, lang="pl", units="c"):
+    def __init__(self, city, lang="en", units="c"):
         if units not in ("c", "f"):
             raise UnitsError("Units must be c or f, not {0}".format(units))
         self.units = units
@@ -81,3 +84,14 @@ class Weather(object):
 
     def parse_all(self, ignore=["icon"]):
         return self._parse_forecast_conditions(True, ignore)
+
+
+if __name__ == '__main__':
+    import sys
+    if len(sys.argv) != 2:
+        print("Usage: {0} <city>")
+        sys.exit(1)
+    we = WeatherParser(sys.argv[1])
+    temp = we.parse_temp().encode("UTF-8")
+    cond = we.parse_conditions().encode("UTF-8")
+    print("{0}°C, {1}".format(temp, cond))
