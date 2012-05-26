@@ -43,35 +43,31 @@ class WeatherParser:
         """Parse temperature in proper units and return a string with
         the temperature.
         """
-        temp_elem = self.tree.find('.//temp_{}'.format(self.units))
-        temp = temp_elem.attrib['data']
-        return temp
+        return self.parse_current_conditions()['temp_{}'.format(self.units)]
 
     def parse_conditions(self):
-        """Parses current conditions and returns string"""
-        cond_elem = self.tree.find('.//condition')
-        cond = cond_elem.attrib['data']
-        return cond
+        """Parse current conditions and return a string"""
+        return self.parse_current_conditions()['condition']
 
-    def parse_current_conditions(self, ignore=["icon"]):
-        """Parses all informations about current weather and returns
-        dictionary.
-        Optional arguments ignore is a list and says, which keys method
-        have to delete.
+    def parse_current_conditions(self, ignore=[]):
+        """Parse all informations about current weather and returns
+        a dictionary.
+        Optional argument ignore is a list specifying which tags
+        have to be deleted.
         """
-        conditions = self.xmldoc.getElementsByTagName("current_conditions")[0]
-        conditions = dict([(cond.nodeName, cond.attributes["data"].value) \
-                for cond in conditions.childNodes])
-        units_dict = {"c": "f", "f": "c"}
-        del conditions["temp_" + units_dict[self.units]]
+        cond_elem = self.tree.find('.//current_conditions')
+        conds = {node.tag: node.attrib['data'] for node in cond_elem}
+        # remove redundant units
+        units_dict = {'c': 'f', 'f': 'c'}
+        del conds['temp_' + units_dict[self.units]]
         for ign in ignore:
-            del conditions[ign]
-        return conditions
+            del conds[ign]
+        return conds
 
     def _parse_forecast_conditions(self, today=False, ignore=[]):
         """Protected method.
 
-        Returns dictionary with conditions on next days, when optional
+        Return dictionary with conditions on next days, when optional
         argument is False or also with current day, when Today is True.
         Argument ignore is a list, which has ignored tags.
         """
@@ -103,3 +99,6 @@ if __name__ == '__main__':
     temp = we.parse_temp().encode("UTF-8")
     cond = we.parse_conditions().encode("UTF-8")
     print("{0}°C, {1}".format(temp, cond))
+    print(we.parse_current_conditions())
+    print(we.parse_on_next_days())
+    print(we.parse_all())
