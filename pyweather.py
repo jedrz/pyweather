@@ -21,8 +21,8 @@ class UnitsError(BaseError):
 
 class WeatherParser:
 
-    WEATHER_URL = 'http://www.google.com/ig/api?weather={city}&hl='
-    '{lang}&oe=UTF-8'
+    WEATHER_URL = 'http://www.google.com/ig/api?weather={city}&hl=' + \
+            '{lang}&oe=UTF-8'
 
     def __init__(self, city, lang='en', units='c'):
         if units not in ('c', 'f'):
