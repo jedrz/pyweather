@@ -32,14 +32,6 @@ class WeatherParser:
                 self.WEATHER_URL.format(city=city, lang=lang)) as xmlsock:
             self.tree = xml.etree.ElementTree.parse(xmlsock)
 
-    def _find(self, it, tag):
-        for i in it:
-            res = i.find(tag)
-            if res:
-                return res
-            else:
-                return self._find(i, tag)
-
     def parse_temp(self):
         """Parse temperature in proper units and return a string with
         the temperature.
