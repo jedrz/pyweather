@@ -9,25 +9,12 @@ import collections
 """Simple weather (from Google) parser."""
 
 
-class BaseError(Exception):
-    """Base Error in this module"""
-    pass
-
-
-class UnitsError(BaseError):
-    """This exception is raised, when units is not correct value"""
-    pass
-
-
 class WeatherParser:
 
     WEATHER_URL = 'http://www.google.com/ig/api?weather={city}&hl=' + \
             '{lang}&oe=UTF-8'
 
-    def __init__(self, city, lang='en', units='c'):
-        if units not in ('c', 'f'):
-            raise UnitsError('UnitsError: {} units are invalid'.format(units))
-        self.units = units
+    def __init__(self, city, lang='en'):
         with urllib.request.urlopen(
                 self.WEATHER_URL.format(city=city, lang=lang)) as xmlsock:
             self.tree = xml.etree.ElementTree.parse(xmlsock)
