@@ -29,7 +29,7 @@ class WeatherParser:
         """Parse current conditions and return a string"""
         return self.parse_current_conditions()['condition']
 
-    def parse_current_conditions(self, ignore=[]):
+    def parse_current_conditions(self):
         """Parse all informations about current weather and returns
         a dictionary.
         Optional argument ignore is a list specifying which tags
@@ -37,11 +37,9 @@ class WeatherParser:
         """
         cond_elem = self.tree.find('.//current_conditions')
         conds = {node.tag: node.attrib['data'] for node in cond_elem}
-        for ign in ignore:
-            del conds[ign]
         return conds
 
-    def _parse_forecast_conditions(self, today=False, ignore=[]):
+    def _parse_forecast_conditions(self, today=False):
         """Protected method.
 
         Return ordered dictionary with conditions on next days, when optional
@@ -55,11 +53,11 @@ class WeatherParser:
                     {n.tag: n.attrib['data'] for n in elem}
         return forecast
 
-    def parse_next_days(self, ignore=[]):
-        return self._parse_forecast_conditions(ignore=ignore)
+    def parse_next_days(self):
+        return self._parse_forecast_conditions()
 
-    def parse_all(self, ignore=[]):
-        return self._parse_forecast_conditions(True, ignore)
+    def parse_all(self):
+        return self._parse_forecast_conditions(True)
 
 
 if __name__ == '__main__':
