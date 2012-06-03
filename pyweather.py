@@ -74,7 +74,7 @@ class WeatherParser:
     def parse_next_days(self, ignore=[]):
         return self._parse_forecast_conditions(ignore=ignore)
 
-    def parse_all(self, ignore=["icon"]):
+    def parse_all(self, ignore=[]):
         return self._parse_forecast_conditions(True, ignore)
 
 
