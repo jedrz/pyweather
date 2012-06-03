@@ -50,9 +50,6 @@ class WeatherParser:
         """
         cond_elem = self.tree.find('.//current_conditions')
         conds = {node.tag: node.attrib['data'] for node in cond_elem}
-        # remove redundant units
-        units_dict = {'c': 'f', 'f': 'c'}
-        del conds['temp_' + units_dict[self.units]]
         for ign in ignore:
             del conds[ign]
         return conds
