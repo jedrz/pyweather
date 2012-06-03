@@ -66,6 +66,6 @@ if __name__ == '__main__':
         print('Usage: {0} <city>')
         sys.exit(1)
     we = WeatherParser(sys.argv[1])
-    temp = we.parse_temp()
+    temp = we.parse_temp('c')
     cond = we.parse_conditions()
     print('{0}°C, {1}'.format(temp, cond))
