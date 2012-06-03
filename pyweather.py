@@ -19,11 +19,11 @@ class WeatherParser:
                 self.WEATHER_URL.format(city=city, lang=lang)) as xmlsock:
             self.tree = xml.etree.ElementTree.parse(xmlsock)
 
-    def parse_temp(self):
+    def parse_temp(self, units='c'):
         """Parse temperature in proper units and return a string with
         the temperature.
         """
-        return self.parse_current_conditions()['temp_{}'.format(self.units)]
+        return self.parse_current_conditions()['temp_{}'.format(units)]
 
     def parse_conditions(self):
         """Parse current conditions and return a string"""
